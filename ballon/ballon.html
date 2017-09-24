@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>无标题文档</title>
+<style type="text/css">
+	*{margin: 0;padding: 0}
+	body{overflow: hidden;background: #ccc}
+	.balloon{/*画出气球*/
+		width: 160px;
+		height: 160px;
+		background: pink;
+		border-radius: 160px 160px 64px 160px;
+		transform: rotate(45deg);
+		box-shadow: -8px -8px 80px -8px #873940 inset;
+		position: absolute;
+	}
+	.balloon::after{/*伪元素 画出气球下方的小三角形*/
+		position: absolute;
+		display: block;
+		content: '';
+		width:100px;
+		height: 100px;
+		bottom: 0;
+		right: 0;
+		width: 0;
+		height: 0;
+		border: 8px solid transparent;
+		border-right-color: #873940;
+		transform: rotate(45deg);
+		border-radius: 16px;
+	}
+</style>
+</head>
+
+<body>
+	<div class="balloon">
+		<audio id="musicm" src="6749.wav"></audio><!--为气球对象加入声音效果-->
+	</div>
+	<script type="text/javascript">
+		var  wH = window.innerHeight;
+		var  wW = window.innerWidth;
+		var  bz = 160;
+		var num = 10;
+		init(num);
+		function init(num){
+			for(var i=0;i<num;i++)
+			{
+				var oBalloon=document.createElement('div');//创建子节点，初始化气球对象
+				oBalloon.className='balloon';
+				document.body.appendChild(oBalloon);//insert the balloon object to the body of webpage
+				oBalloon.speed =1;//define the attributes of balloon by itself
+				var randomX = ~~(Math.random()*parseInt(wW)) -bz;
+				randomX = Math.max(0,randomX);
+				oBalloon.style.top = parseInt(wH) - 160 + 'px';//let balloons located in the bottom of the page 
+				oBalloon.style.left=randomX + 'px';//arrangement the location of balloons by random
+			}
+		}
+		window.setInterval(move,50);//control the balloons move once every 50 miliseconds
+		document.body.addEventListener('click',function(e){//listening the click event
+			var playmusic = document.getElementById("musicm");//get the music object
+			playmusic.play();//when we click the balloon play the music
+			if(e.target.className.toLowerCase() === 'balloon'){
+			
+				boom.call(e.target,function(){
+					this.parentNode.removeChild(this);//delect the ballon
+					init(1);//create a new balloon	
+				}.bind(e.target));
+			}
+		});
+		function boom(cd){//the boom function,control the ballon boom
+			this.timer = setInterval(function(){
+				this.speed++;
+				this.style.top = this.offsetTop - this.speed + 'px';
+				this.style.width= this.offsetWidth - 10 +'px';
+				this.style.height=this.offsetHeight-10+'px';
+				if(this.offsetWidth < 10){
+					cd&&cd();
+					clearInterval(this.timer);
+				}
+			}.bind(this),60);
+		}
+		function move(){//control  moving the balloons
+			var aBalloons = document.querySelectorAll('.balloon');
+			var len =aBalloons.length;
+			
+			for(var j =0;j<len;j++ )
+			{	aBalloons[j].speed =~~(Math.random()*10)+1;
+				var top1 = parseInt(aBalloons[j].style.top)- aBalloons[j].speed;
+				aBalloons[j].style.top = top1 + 'px';
+		
+				if(+aBalloons[j].style.top.replace('px',"")<0)
+					{
+						aBalloons[j].style.top= parseInt(wH) - 160 + 'px';
+					}
+			 	
+				}	
+			
+		}
+	</script>
+</body>
+</html>
